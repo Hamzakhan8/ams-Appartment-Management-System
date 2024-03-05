@@ -32,7 +32,7 @@ if(isset($_POST['txtFloor'])){
 		}
 
 	}
-	//hello worl
+	
 	else{
 		$sql = "UPDATE `tbl_add_floor` SET `floor_no`='".$_POST['txtFloor']."',`ownid`='".$_POST['ownid']."', `branch_id`='".$_POST['branch_id']."' WHERE fid='".$_GET['id']."'";
 		mysqli_query($link,$sql);

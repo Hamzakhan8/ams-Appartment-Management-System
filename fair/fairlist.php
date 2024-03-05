@@ -235,19 +235,24 @@ if(isset($_GET['m']) && $_GET['m'] == 'up'){
                           <div class="mb-12">
                           <input type="hidden" class="form-control  " id="id" value="<?php echo $newData['id']; ?>" />
                             <label for="paymentBy" class="form-label"><?php echo $_data['add_new_form_field_text_25']; ?></label><br>
-                            <select class="form-control" name="paymentBy" id="paymentBy">
-                                <option value="" disabled selected><?php echo $_data['add_new_form_field_text_25']; ?></option>
-                                <option value="2" <?php echo ($newData['check_status'] == 2) ? "selected" : ""; ?>><?php echo $_data['add_new_form_field_text_23']; ?></option>
-                                <option value="1" <?php echo ($newData['check_status'] == 1) ? "selected" : ""; ?>><?php echo $_data['add_new_form_field_text_24']; ?></option>
-                            </select>
-                            <div id="paymentByError" style="color: red;"></div>
-                          </div>
-                          <div class="mb-12">
-                            <label for="paymentStatus" class="form-label"><?php echo $_data['status_field_text_20']; ?></label><br>
-                            <select class="form-control" name="paymentStatus" id="paymentStatus">
-                              <option value="default" disabled selected><?php echo $_data['status_field_text_21']; ?></option>
-                              <option value="2" <?php echo ($newData['status'] == 2) ? "selected" : ""; ?>>Partial</option>
-                              <option value="1" <?php echo ($newData['status'] == 1) ? "selected" : ""; ?>><?php echo $_data['status_field_text_19']; ?></option>
+                            <select class="form-control 1" name="paymentBy" id="paymentBy" onchange="updatePaymentStatusOptions()">
+                                  <option value="" disabled selected><?php echo $_data['add_new_form_field_text_25']; ?></option>
+                                  <option value="2" <?php echo ($newData['check_status'] == 2) ? "selected" : ""; ?>>Bank</option>
+                                  <option value="1" <?php echo ($newData['check_status'] == 1) ? "selected" : ""; ?>>Cash</option>
+                              </select>
+                              <div id="paymentByError" style="color: red;"></div>
+
+                              <div class="mb-12">
+                                  <label for="paymentStatus" class="form-label"><?php echo $_data['status_field_text_20']; ?></label><br>
+                                  <select class="form-control 2" name="paymentStatus" id="paymentStatus">
+                                      <option value="default" disabled selected><?php echo $_data['status_field_text_21']; ?></option>
+                                      <?php
+                                          // If Bank is selected, show only Paid; otherwise, show both options
+                                          $partialSelected = ($newData['status'] == 2) ? "selected" : "";
+                                          $paidSelected = ($newData['status'] == 1 && $newData['check_status'] == 2) ? "selected" : "";
+                                      ?>
+                                      <option value="2" <?php echo $partialSelected; ?>>Partial</option>
+                                      <option value="1" <?php echo $paidSelected; ?>>Paid</option>
                             </select>
                             <div id="paymentStatusError" style="color: red;"></div>
                           </div>
@@ -292,6 +297,27 @@ if(isset($_GET['m']) && $_GET['m'] == 'up'){
   </div>
 </div>
 <script type="text/javascript">
+     function updatePaymentStatusOptions() {
+    var paymentBySelect = document.getElementById("paymentBy");
+    var paymentStatusSelect = document.getElementById("paymentStatus");
+
+    // Hide all options initially
+    for (var i = 0; i < paymentStatusSelect.options.length; i++) {
+        paymentStatusSelect.options[i].style.display = "none";
+    }
+
+    // Show the corresponding option based on the selected value in the first select
+    if (paymentBySelect.value === "2") {
+        // If "Bank" is selected, show only the "Paid" option (value 1)
+        paymentStatusSelect.querySelector('option[value="1"]').style.display = "block";
+    } else if (paymentBySelect.value === "1") {
+        // If "Cash" is selected, show only the "Partial" option (value 2)
+        paymentStatusSelect.querySelector('option[value="2"]').style.display = "block";
+    }
+    
+    // Automatically set the selected value in the second select
+    paymentStatusSelect.value = paymentStatusSelect.querySelector('option[style="display: block;"]').value;
+}
 function deleteFair(Id){
   	var iAnswer = confirm("<?php echo $_data['confirm']; ?>");
 	if(iAnswer){
